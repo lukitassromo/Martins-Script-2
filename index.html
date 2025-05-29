@@ -60,6 +60,17 @@
     let data = JSON.parse(localStorage.getItem("menuData")) || structuredClone(defaultData);
     let modoEdicion = false;
 
+    // Cargar imágenes de portada y logo desde localStorage
+    const portadaGuardada = localStorage.getItem("portadaImg");
+    if (portadaGuardada) {
+      document.getElementById("heroImg").style.backgroundImage = `url('${portadaGuardada}')`;
+    }
+
+    const logoGuardado = localStorage.getItem("logoImg");
+    if (logoGuardado) {
+      document.getElementById("logoPreview").src = logoGuardado;
+    }
+
     Object.keys(data).forEach(tipo =>
       data[tipo].forEach(item => {
         if (item.precio && !item.precioBase) item.precioBase = parseFloat(item.precio);
@@ -130,6 +141,12 @@
 
     function actualizarTexto(tipo, index, campo, valor) {
       if (!modoEdicion) return;
+      valor = valor.trim();
+      if (valor === "") {
+        alert("Este campo no puede estar vacío.");
+        renderItems(tipo);
+        return;
+      }
       data[tipo][index][campo] = valor;
       guardarData();
     }
@@ -158,11 +175,19 @@
       const file = event.target.files[0];
       if (!file) return;
 
+      if (!file.type.startsWith("image/")) {
+        alert("Por favor, selecciona un archivo de imagen válido.");
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = e => {
         data[tipo][index].img = e.target.result;
         guardarData();
         renderItems(tipo);
+      };
+      reader.onerror = () => {
+        alert("Error al cargar la imagen.");
       };
       reader.readAsDataURL(file);
     }
@@ -193,67 +218,8 @@
       if (!modoEdicion) return;
       const file = input.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        document.getElementById("heroImg").style.backgroundImage = `url('${e.target.result}')`;
-      };
-      reader.readAsDataURL(file);
-    }
 
-    function cambiarLogo(input) {
-      if (!modoEdicion) return;
-      const file = input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        document.getElementById("logoPreview").src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function alternarEdicion() {
-      if (!modoEdicion) {
-        const usuario = prompt("Ingrese usuario:");
-        if (usuario !== "Martin Villagra") return alert("Usuario incorrecto.");
-        const contrasena = prompt("Ingrese contraseña:");
-        if (contrasena !== "MartincitoV2025") return alert("Contraseña incorrecta.");
-
-        modoEdicion = true;
-        document.getElementById("editarCartaBtn").textContent = "Dejar de editar";
-        document.body.classList.remove('modo-visitante');
-
-        const logoInput = document.createElement("input");
-        logoInput.type = "file";
-        logoInput.accept = "image/*";
-        logoInput.style.display = "none";
-        logoInput.onchange = () => cambiarLogo(logoInput);
-        document.getElementById("logoContainer").appendChild(logoInput);
-        document.getElementById("logoContainer").onclick = () => logoInput.click();
-
-        const portadaInput = document.createElement("input");
-        portadaInput.type = "file";
-        portadaInput.accept = "image/*";
-        portadaInput.style.display = "none";
-        portadaInput.onchange = () => cambiarPortada(portadaInput);
-        document.getElementById("heroImg").appendChild(portadaInput);
-        document.getElementById("heroImg").onclick = () => portadaInput.click();
-
-      } else {
-        modoEdicion = false;
-        document.getElementById("editarCartaBtn").textContent = "Editar Carta";
-        document.body.classList.add('modo-visitante');
-        document.getElementById("logoContainer").onclick = null;
-        document.getElementById("heroImg").onclick = null;
-      }
-
-      renderItems("promo");
-      renderItems("comida");
-      renderItems("bebida");
-    }
-
-    renderItems("promo");
-    renderItems("comida");
-    renderItems("bebida");
-  </script>
-</body>
-</html>
+      if (!file.type.startsWith("image/")) {
+        alert("Por favor, selecciona un archivo de imagen válido.");
+        return;
+     22
