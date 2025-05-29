@@ -89,14 +89,16 @@
 
         let contenido = `
           ${modoEdicion ? `<input type="file" style="display:none" accept="image/*" onchange="cambiarImagen(event, '${tipo}', ${index})">` : ""}
+
           <div class="img" style="background-image:url('${item.img || "img/default.png"}')" ${modoEdicion ? `onclick="this.previousElementSibling.click()"` : ""}></div>
           <p contenteditable="${modoEdicion}" oninput="actualizarTexto('${tipo}', ${index}, 'nombre', this.innerText)">${item.nombre}</p>
-          <p contenteditable="${modoEdicion}" oninput="actualizarTexto('${tipo}', ${index}, 'descripcion', this.innerText)">${item.descripcion}</p>`;
+          <p contenteditable="${modoEdicion}" oninput="actualizarTexto('${tipo}', ${index}, 'descripcion', this.innerText)">${item.descripcion}</p>
+        `;
 
         if (tipo !== "promo") {
           contenido += `
-            <p class="precio" ${modoEdicion ? `contenteditable="true" onblur="actualizarPrecio('${tipo}', ${index}, this.innerText)"` : ""}>$${item.precio}</p>`;
-          
+            <p class="precio"${modoEdicion && tipo !== "bebida" ? ` contenteditable="true" onblur="actualizarPrecio('${tipo}', ${index}, this.innerText)"` : ""}>$${item.precio}</p>`;
+
           if (tipo === "bebida") {
             contenido += `
               <select onchange="cambiarTamanio('${tipo}', ${index}, this.value)">
