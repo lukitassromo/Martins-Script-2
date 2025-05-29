@@ -214,6 +214,8 @@ button:hover {
   background-color: #007bb5;
 }
 
+
+
 .item p[contenteditable],
 .promo-card p[contenteditable] {
   outline: 1px dashed transparent;
@@ -231,6 +233,40 @@ button:hover {
 .item p,
 .promo-card p {
   margin: 0.5rem 0;
+}
+
+.socials span {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 36px;       /* tamaño fijo ancho */
+  height: 36px;      /* tamaño fijo alto */
+  border-radius: 8px; /* borde redondeado */
+  background-color: #0098db; /* color de fondo (ajustable) */
+  color: white;      /* color del icono */
+  font-size: 20px;   /* tamaño del icono */
+  margin: 0 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.socials span:hover {
+  background-color: #007bb5; /* cambio de color al hover */
+}
+
+.socials img {
+  width: 36px;         /* ancho fijo */
+  height: 36px;        /* alto fijo */
+  border-radius: 8px;  /* esquinas redondeadas */
+  object-fit: cover;   /* que no se deformen */
+  margin: 0 0.3rem;    /* separación horizontal entre iconos */
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  vertical-align: middle;
+}
+
+.socials img:hover {
+  transform: scale(1.1); /* efecto hover suave */
 }
 
 /* Responsive mejorado */
@@ -261,6 +297,12 @@ button:hover {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
+}
+
+.modo-visitante .btn-agregar-promo,
+.modo-visitante .btn-agregar-producto,
+.modo-visitante .btn-eliminar-producto {
+  display: none !important;
 }
 
 @media (max-width: 480px) {
