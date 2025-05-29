@@ -60,17 +60,6 @@
     let data = JSON.parse(localStorage.getItem("menuData")) || structuredClone(defaultData);
     let modoEdicion = false;
 
-    // Cargar imágenes de portada y logo desde localStorage
-    const portadaGuardada = localStorage.getItem("portadaImg");
-    if (portadaGuardada) {
-      document.getElementById("heroImg").style.backgroundImage = `url('${portadaGuardada}')`;
-    }
-
-    const logoGuardado = localStorage.getItem("logoImg");
-    if (logoGuardado) {
-      document.getElementById("logoPreview").src = logoGuardado;
-    }
-
     Object.keys(data).forEach(tipo =>
       data[tipo].forEach(item => {
         if (item.precio && !item.precioBase) item.precioBase = parseFloat(item.precio);
@@ -103,9 +92,23 @@
           <p contenteditable="${modoEdicion}" oninput="actualizarTexto('${tipo}', ${index}, 'descripcion', this.innerText)">${item.descripcion}</p>`;
 
         if (tipo !== "promo") {
-          contenido += `
-            <p class="precio" ${modoEdicion ? `contenteditable="true" onblur="actualizarPrecio('${tipo}', ${index}, this.innerText)"` : ""}>$${item.precio}</p>`;
-          
+          if (modoEdicion) {
+            contenido += `
+              <p class="precio" contenteditable="true" onblur="actualizarPrecio('${tipo}', ${index}, this.innerText)">$${item.precio}</p>`;
+          } else {
+            if (tipo === "bebida") {
+              const precioPeque = calcularPrecioConTamanio(item.precioBase, "peque");
+              const precioMed = calcularPrecioConTamanio(item.precioBase, "med");
+              const precioGran = calcularPrecioConTamanio(item.precioBase, "gran");
+              contenido += `
+                <p class="precio">Pequeño: $${precioPeque}</p>
+                <p class="precio">Mediano: $${precioMed}</p>
+                <p class="precio">Grande: $${precioGran}</p>`;
+            } else {
+              contenido += `<p class="precio">$${item.precio}</p>`;
+            }
+          }
+
           if (tipo === "bebida") {
             contenido += `
               <select ${modoEdicion ? "" : "disabled"} onchange="cambiarTamanio('${tipo}', ${index}, this.value)">
@@ -141,12 +144,6 @@
 
     function actualizarTexto(tipo, index, campo, valor) {
       if (!modoEdicion) return;
-      valor = valor.trim();
-      if (valor === "") {
-        alert("Este campo no puede estar vacío.");
-        renderItems(tipo);
-        return;
-      }
       data[tipo][index][campo] = valor;
       guardarData();
     }
@@ -175,19 +172,11 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecciona un archivo de imagen válido.");
-        return;
-      }
-
       const reader = new FileReader();
       reader.onload = e => {
         data[tipo][index].img = e.target.result;
         guardarData();
         renderItems(tipo);
-      };
-      reader.onerror = () => {
-        alert("Error al cargar la imagen.");
       };
       reader.readAsDataURL(file);
     }
@@ -215,11 +204,4 @@
     }
 
     function cambiarPortada(input) {
-      if (!modoEdicion) return;
-      const file = input.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith("image/")) {
-        alert("Por favor, selecciona un archivo de imagen válido.");
-        return;
-     22
+      if (!modoEdicion) return28
