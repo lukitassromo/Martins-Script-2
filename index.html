@@ -216,21 +216,23 @@
       modoEdicion = true;
       alert("Acceso concedido. Ya puede editar la carta.");
 
-      const logoInput = document.createElement("input");
-      logoInput.type = "file";
-      logoInput.accept = "image/*";
-      logoInput.style.display = "none";
-      logoInput.onchange = () => cambiarLogo(logoInput);
-      document.getElementById("logoContainer").appendChild(logoInput);
-      document.getElementById("logoContainer").onclick = () => logoInput.click();
+      // Input para cambiar logo
+      let inputLogo = document.createElement("input");
+      inputLogo.type = "file";
+      inputLogo.accept = "image/*";
+      inputLogo.style.display = "none";
+      inputLogo.onchange = () => cambiarLogo(inputLogo);
+      document.getElementById("logoContainer").appendChild(inputLogo);
+      document.getElementById("logoContainer").onclick = () => inputLogo.click();
 
-      const portadaInput = document.createElement("input");
-      portadaInput.type = "file";
-      portadaInput.accept = "image/*";
-      portadaInput.style.display = "none";
-      portadaInput.onchange = () => cambiarPortada(portadaInput);
-      document.getElementById("heroImg").appendChild(portadaInput);
-      document.getElementById("heroImg").onclick = () => portadaInput.click();
+      // Input para cambiar portada
+      let inputHero = document.createElement("input");
+      inputHero.type = "file";
+      inputHero.accept = "image/*";
+      inputHero.style.display = "none";
+      inputHero.onchange = () => cambiarPortada(inputHero);
+      document.getElementById("heroImg").appendChild(inputHero);
+      document.getElementById("heroImg").onclick = () => inputHero.click();
 
       renderItems("promo");
       renderItems("comida");
@@ -244,4 +246,3 @@
 </body>
 </html>
 
-</script>
