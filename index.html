@@ -92,23 +92,9 @@
           <p contenteditable="${modoEdicion}" oninput="actualizarTexto('${tipo}', ${index}, 'descripcion', this.innerText)">${item.descripcion}</p>`;
 
         if (tipo !== "promo") {
-          if (modoEdicion) {
-            contenido += `
-              <p class="precio" contenteditable="true" onblur="actualizarPrecio('${tipo}', ${index}, this.innerText)">$${item.precio}</p>`;
-          } else {
-            if (tipo === "bebida") {
-              const precioPeque = calcularPrecioConTamanio(item.precioBase, "peque");
-              const precioMed = calcularPrecioConTamanio(item.precioBase, "med");
-              const precioGran = calcularPrecioConTamanio(item.precioBase, "gran");
-              contenido += `
-                <p class="precio">Pequeño: $${precioPeque}</p>
-                <p class="precio">Mediano: $${precioMed}</p>
-                <p class="precio">Grande: $${precioGran}</p>`;
-            } else {
-              contenido += `<p class="precio">$${item.precio}</p>`;
-            }
-          }
-
+          contenido += `
+            <p class="precio" ${modoEdicion ? `contenteditable="true" onblur="actualizarPrecio('${tipo}', ${index}, this.innerText)"` : ""}>$${item.precio}</p>`;
+          
           if (tipo === "bebida") {
             contenido += `
               <select ${modoEdicion ? "" : "disabled"} onchange="cambiarTamanio('${tipo}', ${index}, this.value)">
@@ -204,4 +190,70 @@
     }
 
     function cambiarPortada(input) {
-      if (!modoEdicion) return28
+      if (!modoEdicion) return;
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById("heroImg").style.backgroundImage = `url('${e.target.result}')`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function cambiarLogo(input) {
+      if (!modoEdicion) return;
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById("logoPreview").src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function alternarEdicion() {
+      if (!modoEdicion) {
+        const usuario = prompt("Ingrese usuario:");
+        if (usuario !== "Martin Villagra") return alert("Usuario incorrecto.");
+        const contrasena = prompt("Ingrese contraseña:");
+        if (contrasena !== "MartincitoV2025") return alert("Contraseña incorrecta.");
+
+        modoEdicion = true;
+        document.getElementById("editarCartaBtn").textContent = "Guardar Cambios";
+        document.body.classList.remove('modo-visitante');
+
+        const logoInput = document.createElement("input");
+        logoInput.type = "file";
+        logoInput.accept = "image/*";
+        logoInput.style.display = "none";
+        logoInput.onchange = () => cambiarLogo(logoInput);
+        document.getElementById("logoContainer").appendChild(logoInput);
+        document.getElementById("logoContainer").onclick = () => logoInput.click();
+
+        const portadaInput = document.createElement("input");
+        portadaInput.type = "file";
+        portadaInput.accept = "image/*";
+        portadaInput.style.display = "none";
+        portadaInput.onchange = () => cambiarPortada(portadaInput);
+        document.getElementById("heroImg").appendChild(portadaInput);
+        document.getElementById("heroImg").onclick = () => portadaInput.click();
+
+      } else {
+        modoEdicion = false;
+        document.getElementById("editarCartaBtn").textContent = "Editar Carta";
+        document.body.classList.add('modo-visitante');
+        document.getElementById("logoContainer").onclick = null;
+        document.getElementById("heroImg").onclick = null;
+      }
+
+      renderItems("promo");
+      renderItems("comida");
+      renderItems("bebida");
+    }
+
+    renderItems("promo");
+    renderItems("comida");
+    renderItems("bebida");
+  </script>
+</body>
+</html>
