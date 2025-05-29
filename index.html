@@ -13,7 +13,7 @@
       <img src="img/logo.png" alt="Logo" class="logo-img" id="logoPreview" />
       <img src="img/logotipo-puro.png" alt="Martin's Cafe" style="height: 32px;" />
     </div>
-    <button id="editarCartaBtn" type="button" onclick="alternarEdicion()">Editar Carta</button>
+    <button id="editarCartaBtn" type="button" onclick="solicitarAcceso()">Editar Carta</button>
   </header>
 
   <section class="hero">
@@ -59,6 +59,8 @@
 
     let data = JSON.parse(localStorage.getItem("menuData")) || structuredClone(defaultData);
     let modoEdicion = false;
+    const usuarioLogueado = false;
+    document.body.classList.toggle('modo-visitante', !usuarioLogueado);
 
     Object.keys(data).forEach(tipo =>
       data[tipo].forEach(item => {
@@ -97,7 +99,7 @@
           
           if (tipo === "bebida") {
             contenido += `
-              <select ${modoEdicion ? "" : "disabled"} onchange="cambiarTamanio('${tipo}', ${index}, this.value)">
+              <select onchange="cambiarTamanio('${tipo}', ${index}, this.value)">
                 <option value="peque" ${item.tamanio === "peque" ? "selected" : ""}>Pequeño</option>
                 <option value="med" ${item.tamanio === "med" ? "selected" : ""}>Mediano</option>
                 <option value="gran" ${item.tamanio === "gran" ? "selected" : ""}>Grande</option>
@@ -113,18 +115,12 @@
         container.appendChild(div);
       });
 
-      const addBtn = document.getElementById(`${tipo}AgregarBtn`);
       if (modoEdicion) {
-        if (!addBtn) {
-          const btn = document.createElement("button");
-          btn.id = `${tipo}AgregarBtn`;
-          btn.type = "button";
-          btn.textContent = tipo === "promo" ? "Agregar promoción" : "Agregar ítem";
-          btn.onclick = () => agregarItem(tipo);
-          container.parentElement.appendChild(btn);
-        }
-      } else {
-        if (addBtn) addBtn.remove();
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = tipo === "promo" ? "Agregar promoción" : "Agregar ítem";
+        btn.onclick = () => agregarItem(tipo);
+        container.parentElement.appendChild(btn);
       }
     }
 
@@ -211,40 +207,30 @@
       reader.readAsDataURL(file);
     }
 
-    function alternarEdicion() {
-      if (!modoEdicion) {
-        const usuario = prompt("Ingrese usuario:");
-        if (usuario !== "Martin Villagra") return alert("Usuario incorrecto.");
-        const contrasena = prompt("Ingrese contraseña:");
-        if (contrasena !== "MartincitoV2025") return alert("Contraseña incorrecta.");
+    function solicitarAcceso() {
+      const usuario = prompt("Ingrese usuario:");
+      if (usuario !== "Martin Villagra") return alert("Usuario incorrecto.");
+      const contrasena = prompt("Ingrese contraseña:");
+      if (contrasena !== "MartincitoV2025") return alert("Contraseña incorrecta.");
 
-        modoEdicion = true;
-        document.getElementById("editarCartaBtn").textContent = "Guardar Cambios";
-        document.body.classList.remove('modo-visitante');
+      modoEdicion = true;
+      alert("Acceso concedido. Ya puede editar la carta.");
 
-        const logoInput = document.createElement("input");
-        logoInput.type = "file";
-        logoInput.accept = "image/*";
-        logoInput.style.display = "none";
-        logoInput.onchange = () => cambiarLogo(logoInput);
-        document.getElementById("logoContainer").appendChild(logoInput);
-        document.getElementById("logoContainer").onclick = () => logoInput.click();
+      const logoInput = document.createElement("input");
+      logoInput.type = "file";
+      logoInput.accept = "image/*";
+      logoInput.style.display = "none";
+      logoInput.onchange = () => cambiarLogo(logoInput);
+      document.getElementById("logoContainer").appendChild(logoInput);
+      document.getElementById("logoContainer").onclick = () => logoInput.click();
 
-        const portadaInput = document.createElement("input");
-        portadaInput.type = "file";
-        portadaInput.accept = "image/*";
-        portadaInput.style.display = "none";
-        portadaInput.onchange = () => cambiarPortada(portadaInput);
-        document.getElementById("heroImg").appendChild(portadaInput);
-        document.getElementById("heroImg").onclick = () => portadaInput.click();
-
-      } else {
-        modoEdicion = false;
-        document.getElementById("editarCartaBtn").textContent = "Editar Carta";
-        document.body.classList.add('modo-visitante');
-        document.getElementById("logoContainer").onclick = null;
-        document.getElementById("heroImg").onclick = null;
-      }
+      const portadaInput = document.createElement("input");
+      portadaInput.type = "file";
+      portadaInput.accept = "image/*";
+      portadaInput.style.display = "none";
+      portadaInput.onchange = () => cambiarPortada(portadaInput);
+      document.getElementById("heroImg").appendChild(portadaInput);
+      document.getElementById("heroImg").onclick = () => portadaInput.click();
 
       renderItems("promo");
       renderItems("comida");
